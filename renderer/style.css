@@ -1,0 +1,473 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #2b2b2b;
+  color: #eee;
+  font-family: system-ui, sans-serif;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+#toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  background: #1e1e1e;
+  border-bottom: 1px solid #444;
+  flex-shrink: 0;
+}
+
+#toolbar button {
+  padding: 6px 14px;
+  background: #4a90d9;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+#toolbar button:hover {
+  background: #357abd;
+}
+
+#toolbar button:disabled {
+  background: #444;
+  color: #777;
+  cursor: default;
+}
+
+#split-panel {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: #252525;
+  border-bottom: 1px solid #444;
+  flex-shrink: 0;
+  font-size: 13px;
+}
+
+#split-panel.hidden,
+#watermark-panel.hidden {
+  display: none;
+}
+
+#watermark-panel {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 12px;
+  background: #252525;
+  border-bottom: 1px solid #444;
+  flex-shrink: 0;
+  font-size: 13px;
+  flex-wrap: wrap;
+}
+
+#watermark-panel label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+#watermark-panel input[type="text"],
+#watermark-panel input[type="number"] {
+  background: #333;
+  color: #eee;
+  border: 1px solid #555;
+  border-radius: 4px;
+  padding: 3px 6px;
+  font-size: 13px;
+}
+
+#watermark-panel select {
+  background: #333;
+  color: #eee;
+  border: 1px solid #555;
+  border-radius: 4px;
+  padding: 3px 6px;
+  font-size: 13px;
+}
+
+#wm-opacity-val {
+  font-size: 11px;
+  color: #888;
+  min-width: 30px;
+}
+
+#watermark-panel button {
+  padding: 4px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+#btn-wm-apply  { background: #4a90d9; color: #fff; }
+#btn-wm-apply:hover  { background: #357abd; }
+#btn-wm-cancel { background: #555; color: #eee; }
+#btn-wm-cancel:hover { background: #666; }
+
+#split-panel code {
+  background: #333;
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-size: 12px;
+}
+
+#split-range {
+  background: #333;
+  color: #eee;
+  border: 1px solid #555;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 13px;
+  width: 180px;
+}
+
+#split-panel button {
+  padding: 4px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+#btn-split-go {
+  background: #4a90d9;
+  color: #fff;
+}
+
+#btn-split-go:hover { background: #357abd; }
+
+#btn-split-cancel {
+  background: #555;
+  color: #eee;
+}
+
+#btn-split-cancel:hover { background: #666; }
+
+#file-name {
+  font-size: 13px;
+  color: #ccc;
+}
+
+#page-count {
+  font-size: 12px;
+  color: #888;
+}
+
+#status {
+  font-size: 12px;
+  margin-left: auto;
+}
+
+#page-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-content: flex-start;
+}
+
+.page-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+  cursor: grab;
+  user-select: none;
+}
+
+.page-wrapper canvas {
+  border: 1px solid #555;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+}
+
+.page-wrapper.dragging {
+  opacity: 0.4;
+}
+
+.page-wrapper.drag-over canvas {
+  border-color: #4a90d9;
+  box-shadow: 0 0 0 2px #4a90d9;
+}
+
+.page-label {
+  font-size: 11px;
+  color: #999;
+}
+
+.btn-delete-page,
+.btn-rotate-page,
+.btn-annotate-page {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.btn-delete-page {
+  top: 4px;
+  right: 4px;
+  background: rgba(200, 60, 60, 0.85);
+}
+
+.btn-rotate-page {
+  top: 4px;
+  right: 28px;
+  background: rgba(60, 60, 60, 0.85);
+  font-size: 15px;
+}
+
+.btn-annotate-page {
+  top: 4px;
+  right: 52px;
+  background: rgba(80, 50, 160, 0.85);
+}
+
+.page-wrapper:hover .btn-delete-page,
+.page-wrapper:hover .btn-rotate-page,
+.page-wrapper:hover .btn-annotate-page {
+  display: flex;
+}
+
+/* ── Annotation modal ─────────────────────────────────────── */
+#annotate-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  background: #1a1a1a;
+}
+
+#annotate-modal.hidden { display: none; }
+
+#annotate-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: #111;
+  border-bottom: 1px solid #444;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+#annotate-page-label {
+  font-size: 13px;
+  color: #aaa;
+  min-width: 60px;
+}
+
+#annotate-tools {
+  display: flex;
+  gap: 4px;
+}
+
+.tool-btn {
+  padding: 5px 10px;
+  background: #333;
+  color: #ccc;
+  border: 1px solid #555;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.tool-btn:hover  { background: #444; }
+.tool-btn.active { background: #4a90d9; color: #fff; border-color: #4a90d9; }
+
+#annotate-toolbar input[type="color"] {
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 0;
+  background: none;
+}
+
+#btn-annotate-clear {
+  padding: 5px 10px;
+  background: #555;
+  color: #eee;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  margin-left: auto;
+}
+
+#btn-annotate-clear:hover { background: #666; }
+
+#btn-annotate-done {
+  padding: 5px 14px;
+  background: #4a90d9;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+#btn-annotate-done:hover { background: #357abd; }
+
+#annotate-sub-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px;
+  background: #252525;
+  border-bottom: 1px solid #444;
+  flex-shrink: 0;
+  font-size: 13px;
+}
+
+#annotate-sub-toolbar.hidden { display: none; }
+
+#stamp-controls,
+#text-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#stamp-controls.hidden,
+#text-controls.hidden { display: none; }
+
+#stamp-controls button,
+#text-controls button {
+  padding: 4px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  background: #4a90d9;
+  color: #fff;
+}
+
+#stamp-controls button:hover,
+#text-controls button:hover { background: #357abd; }
+
+#stamp-controls button:disabled { background: #444; color: #777; cursor: default; }
+
+#btn-stamp-cancel,
+#btn-text-cancel { background: #555 !important; }
+#btn-stamp-cancel:hover,
+#btn-text-cancel:hover { background: #666 !important; }
+
+#annotate-text-input {
+  background: #333;
+  color: #eee;
+  border: 1px solid #555;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 13px;
+  width: 200px;
+}
+
+#annotate-text-color {
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 0;
+}
+
+#annotate-text-size {
+  background: #333;
+  color: #eee;
+  border: 1px solid #555;
+  border-radius: 4px;
+  padding: 4px;
+  font-size: 12px;
+}
+
+.hint {
+  font-size: 11px;
+  color: #888;
+}
+
+#annotate-canvas-area {
+  flex: 1;
+  overflow: auto;
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  background: #2b2b2b;
+}
+
+#annotate-canvas-wrapper {
+  position: relative;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+#annotate-page-canvas {
+  display: block;
+}
+
+#annotate-overlay-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  cursor: crosshair;
+}
+
+/* ── Stamp overlay ────────────────────────────────────────── */
+#stamp-overlay {
+  position: absolute;
+  border: 2px dashed #4a90d9;
+  cursor: move;
+  box-sizing: border-box;
+}
+
+#stamp-overlay.hidden { display: none; }
+
+#stamp-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  pointer-events: none;
+  user-select: none;
+}
+
+.stamp-handle {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: #4a90d9;
+  border: 1px solid #fff;
+  border-radius: 2px;
+}
+
+.stamp-handle-se {
+  bottom: -6px;
+  right: -6px;
+  cursor: se-resize;
+}

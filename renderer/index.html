@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; worker-src blob:; img-src 'self' data: blob:;" />
+  <title>PDF Editor</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="toolbar">
+    <button id="btn-open">Open PDF</button>
+    <button id="btn-merge">Merge PDFs</button>
+    <button id="btn-split" disabled>Split / Extract</button>
+    <button id="btn-compress" disabled>Compress</button>
+    <button id="btn-watermark" disabled>Watermark</button>
+    <button id="btn-export" disabled>Export</button>
+    <span id="file-name"></span>
+    <span id="page-count"></span>
+    <span id="status"></span>
+  </div>
+
+  <div id="split-panel" class="hidden">
+    <label>Pages to extract (e.g. <code>1-3, 5, 7-9</code>):</label>
+    <input id="split-range" type="text" placeholder="1-3, 5" />
+    <button id="btn-split-go">Extract</button>
+    <button id="btn-split-cancel">Cancel</button>
+  </div>
+
+  <div id="watermark-panel" class="hidden">
+    <label>Text:
+      <input id="wm-text" type="text" placeholder="CONFIDENTIAL" style="width:160px" />
+    </label>
+    <label>Size:
+      <input id="wm-size" type="number" value="48" min="8" max="200" style="width:60px" />
+    </label>
+    <label>Opacity:
+      <input id="wm-opacity" type="range" min="5" max="100" value="20" style="width:80px" />
+      <span id="wm-opacity-val">20%</span>
+    </label>
+    <label>Position:
+      <select id="wm-position">
+        <option value="center">Center (diagonal)</option>
+        <option value="bottom">Bottom center</option>
+        <option value="top">Top center</option>
+      </select>
+    </label>
+    <label style="display:flex;align-items:center;gap:4px">
+      Page numbers <input id="wm-pagenums" type="checkbox" />
+    </label>
+    <button id="btn-wm-apply">Apply &amp; Save</button>
+    <button id="btn-wm-cancel">Cancel</button>
+  </div>
+
+  <div id="page-container"></div>
+
+  <!-- Annotation modal -->
+  <div id="annotate-modal" class="hidden">
+    <div id="annotate-toolbar">
+      <span id="annotate-page-label">Page 1</span>
+      <div id="annotate-tools">
+        <button class="tool-btn active" data-tool="draw">✏ Draw</button>
+        <button class="tool-btn" data-tool="highlight">▬ Highlight</button>
+        <button class="tool-btn" data-tool="text">T Text</button>
+        <button class="tool-btn" data-tool="stamp">⬜ Stamp</button>
+      </div>
+      <label title="Pen color">
+        <input type="color" id="annotate-color" value="#e00000" />
+      </label>
+      <label title="Pen size" style="display:flex;align-items:center;gap:4px;font-size:12px">
+        Size <input type="range" id="annotate-size" min="1" max="20" value="3" style="width:70px" />
+      </label>
+      <button id="btn-annotate-clear">Clear</button>
+      <button id="btn-annotate-done">Done</button>
+    </div>
+
+    <div id="annotate-sub-toolbar" class="hidden">
+      <div id="stamp-controls" class="hidden">
+        <button id="btn-stamp-pick">Choose PNG…</button>
+        <button id="btn-stamp-place" disabled>Place Stamp</button>
+        <button id="btn-stamp-cancel">Cancel</button>
+      </div>
+      <div id="text-controls" class="hidden">
+        <input type="text" id="annotate-text-input" placeholder="Type text here…" />
+        <input type="color" id="annotate-text-color" value="#000000" />
+        <select id="annotate-text-size">
+          <option value="12">12pt</option>
+          <option value="16" selected>16pt</option>
+          <option value="20">20pt</option>
+          <option value="24">24pt</option>
+          <option value="32">32pt</option>
+        </select>
+        <span class="hint">Click the page to place</span>
+        <button id="btn-text-cancel">Cancel</button>
+      </div>
+    </div>
+
+    <div id="annotate-canvas-area">
+      <div id="annotate-canvas-wrapper">
+        <canvas id="annotate-page-canvas"></canvas>
+        <canvas id="annotate-overlay-canvas"></canvas>
+        <div id="stamp-overlay" class="hidden">
+          <img id="stamp-img" draggable="false" />
+          <div class="stamp-handle stamp-handle-se"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../node_modules/pdfjs-dist/build/pdf.js"></script>
+  <script src="../node_modules/pdf-lib/dist/pdf-lib.js"></script>
+  <script src="renderer.js"></script>
+  <script src="annotate.js"></script>
+</body>
+</html>

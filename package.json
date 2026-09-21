@@ -1,0 +1,16 @@
+{
+  "name": "pdf-editor",
+  "version": "1.0.0",
+  "description": "Personal PDF editor",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "devDependencies": {
+    "electron": "^28.0.0"
+  },
+  "dependencies": {
+    "pdf-lib": "^1.17.1",
+    "pdfjs-dist": "^3.11.174"
+  }
+}
